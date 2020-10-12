@@ -66,32 +66,18 @@ for allImages in imageFiles:
 
     sliced=10
     intdB = 10*np.log10(Int)
+    
+    plt.figure()
+    plt.imshow(intdB,cmap='binary')
+    plt.clim([75,110])
 
-    meanIntdB = np.mean(intdB,0)
-    meanIntdB = np.mean(meanIntdB,1)
     
-    plt.figure(1)
-    plt.plot(meanIntdB)
-    
-    
-    plt.figure(2)
-    plt.clf()
-    plt.plot(meanIntdB)
-    plt.show()
-    #peak = plt.ginput(2)
-    #peak = np.array([i[0] for i in peak]).astype(int)
-    peak = np.array((5000,11500))
-    peakpos = np.append(peakpos,np.argmax(meanIntdB[peak[0]:peak[1]]) + peak[0])
-peakpossorted = np.sort(peakpos)    
-plt.figure()
-plt.plot(peakpossorted,'bx')    
+    plt.figure()
+    plt.imshow(Ret,cmap='binary')
+    plt.clim([0.2,1.4])
 
-stepsize=[]
-for i in range(1,len(peakpossorted)):
-    stepsize = np.append(stepsize,(peakpossorted[i] - peakpossorted[i-1])/scale)
-    
-plt.figure()
-plt.plot(stepsize,'bx')    
+
+
     
     
     # glass= plt.ginput(2)
