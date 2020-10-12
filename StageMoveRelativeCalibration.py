@@ -1,6 +1,6 @@
 
 import os,sys
-file_dir = os.path.dirname('H:/PhD/Python/GitHub/Universal')
+file_dir = os.path.dirname('Z:/PhD/Python/GitHub/Universal')
 sys.path.append(file_dir)
 
 import matplotlib.pyplot as plt
@@ -19,7 +19,7 @@ plt.close('all')
 
 tstart=time.time()
 #Data location information  
-folderLocation = r'H:/PhD/OCT Data/Compression Test/Calibration/Step 0.05'                                                           
+folderLocation = r'Z:/PhD/OCT Data/Compression Test/Calibration/12 October/Step 0.06'                                                           
 npy = r'\npy_files'                                                             
 output = r'\output_files'                                                        
 #Git Comment
@@ -74,7 +74,7 @@ for allImages in imageFiles:
     plt.show()
     #peak = plt.ginput(2)
     #peak = np.array([i[0] for i in peak]).astype(int)
-    peak = np.array((5000,11500))
+    peak = np.array((2500,10000))
     peakpos = np.append(peakpos,np.argmax(meanIntdB[peak[0]:peak[1]]) + peak[0])
 peakpossorted = np.sort(peakpos)    
 plt.figure()
@@ -87,6 +87,7 @@ for i in range(1,len(peakpossorted)):
 plt.figure()
 plt.plot(stepsize,'bx')    
     
+np.save(dataLocation +  output + '/stepsize_{}.npy'.format(sampleName),np.array(stepsize))
     
 
         
