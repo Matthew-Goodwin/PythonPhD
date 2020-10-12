@@ -5,7 +5,7 @@ Created on Mon Jul 22 13:38:25 2019
 @author: mbro632
 """
 ##Test
-from nptdms import TdmsFile,TdmsWriter,ChannelObject
+from nptdms import TdmsFile,TdmsWriter,ChannelObject,TdmsGroup,TdmsChannel
 import matplotlib.pylab as plt
 import numpy as np
 from PIL import Image
@@ -42,8 +42,10 @@ def read_tdms(filename, A_scan_num, B_scan_num):
     ## Read the TDMS data from the PS-OCT system and write to a C-Scan matrix.
 
     ## inputs filename = TDMS file location, A_scan_num is the number of A_Scans in each B_Scan and B_scan_num is the number of B_Scans in the C_Scan.
-    tdms_file = TdmsFile(filename) ##import the data as a TDMS
-    data =  tdms_file.object('Untitled', tdms_file.group_channels('Untitled')[0].channel).data ## Extract the data
+    tdms_file = TdmsFile.read(filename) ##import the data as a TDMS
+    
+    data = np.squeeze(tdms_file.as_dataframe().to_numpy())
+    #data =  tdms_file.Object('Untitled', tdms_file.group_channels('Untitled')[0].channel).data ## Extract the data
     
     A_scan_length = int(len(data)/B_scan_num/A_scan_num) # calculate A_scan length
     data.resize((B_scan_num,A_scan_num,A_scan_length))
