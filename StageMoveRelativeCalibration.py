@@ -92,7 +92,8 @@ plt.plot(stepsize,'bx')
 np.save(dataLocation +  output + '/stepsize_{}.npy'.format(sampleName),np.array(stepsize))
     
 # %%
-        
+       
+#Run thi section to plot the relative step size and the micrometer movement of the stage 
 parentDirectory = 'H:/PhD/OCT Data/Compression Test/Calibration/12 October'
 
 StepFileNames = sorted(glob.glob(parentDirectory + '/' + 'Step*'))
