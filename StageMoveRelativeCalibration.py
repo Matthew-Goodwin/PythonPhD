@@ -19,10 +19,12 @@ plt.close('all')
 
 tstart=time.time()
 #Data location information  
-folderLocation = r'Z:/PhD/OCT Data/Compression Test/Calibration/12 October/Step 0.06'                                                           
+folderLocation = r'Z:/PhD/OCT Data/Compression Test/Calibration/12 October/Step 0.04'                                                           
 npy = r'\npy_files'                                                             
 output = r'\output_files'                                                        
 #Git Comment
+
+# %%
 
 #PS-OCT Image information
 spectra_num = 1024
@@ -89,5 +91,43 @@ plt.plot(stepsize,'bx')
     
 np.save(dataLocation +  output + '/stepsize_{}.npy'.format(sampleName),np.array(stepsize))
     
-
+# %%
         
+parentDirectory = 'H:/PhD/OCT Data/Compression Test/Calibration/12 October'
+
+StepFileNames = sorted(glob.glob(parentDirectory + '/' + 'Step*'))
+
+MedianStepSize =[]
+RelStepSize = []
+
+for StepSizeFile  in StepFileNames:
+    StepSizeDist = StepSizeFile.split('\\')[-1]
+    StepSizes = np.median(np.load(glob.glob(StepSizeFile + output + '/*npy')[0]))
+    RelativeStepSize = float(StepSizeDist.split(' ')[-1])
+    
+    MedianStepSize = np.append(MedianStepSize, StepSizes)
+    RelStepSize = np.append(RelStepSize, RelativeStepSize)
+    
+    
+
+
+
+#Regression
+MedianStepSizemicron = MedianStepSize*1000/100
+xpoints = np.arange(min(RelStepSize), max(RelStepSize), ((max(RelStepSize)- min(RelStepSize))/100))
+polyCoeff = np.polyfit(RelStepSize,MedianStepSizemicron,1)
+yfitted = polyCoeff[0]*xpoints + polyCoeff[1]
+
+
+plt.figure()
+plt.plot(RelStepSize, MedianStepSizemicron, 'x')
+plt.plot(xpoints,yfitted,'r-')
+plt.xlabel('Relative Step Size')
+plt.ylabel('Step Size (micrometer)')
+plt.tight_layout()
+plt.grid()
+print('Relative step size needs to be multiplied by: {0:.2f} in order to convert the step to micrometers'.format(polyCoeff[0]))
+
+
+
+    
