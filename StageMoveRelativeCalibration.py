@@ -1,6 +1,6 @@
 
 import os,sys
-file_dir = os.path.dirname('Z:/PhD/Python/GitHub/Universal')
+file_dir = os.path.dirname('H:/PhD/Python/GitHub/Universal')
 sys.path.append(file_dir)
 
 import matplotlib.pyplot as plt
@@ -19,7 +19,7 @@ plt.close('all')
 
 tstart=time.time()
 #Data location information  
-folderLocation = r'Z:/PhD/OCT Data/Compression Test/Calibration/12 October/Step 0.04'                                                           
+folderLocation = r'H:/PhD/OCT Data/Compression Test/Calibration/12 October/Step 0.04'                                                           
 npy = r'\npy_files'                                                             
 output = r'\output_files'                                                        
 #Git Comment
