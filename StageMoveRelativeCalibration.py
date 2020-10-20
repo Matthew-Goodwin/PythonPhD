@@ -130,5 +130,34 @@ plt.grid()
 print('Relative step size needs to be multiplied by: {0:.2f} in order to convert the step to micrometers'.format(polyCoeff[0]))
 
 
+# %%
+
+parentDirectory = 'H:/PhD/OCT Data/Compression Test'
+
+force = np.array((0,1100,2094,3085,4453,5444))*9.81 /1000 
+
+N=6 #Number of measurements per trial
+
+
+loadCellFiles = glob.glob(parentDirectory + '/ForceCalib_*.txt')
+
+for files in enumerate(loadCellFiles):
+    print(files)
+    loadCellData = np.loadtxt(files[1])
+    
+    if files[0] == 0:
+        voltageRatio = loadCellData
+    
+    voltageRatio = np.vstack((voltageRatio,loadCellData))
+
+
+plt.figure()
+for i in range(len(voltageRatio)):
+    plt.plot(force, voltageRatio[i,:],'x')
+
+plt.plot(force,np.mean(voltageRatio, axis=0),'k--')
+plt.xlabel('Weight (N)')
+plt.ylabel('Voltage Ratio (mV/V)')
+plt.grid()
 
     
