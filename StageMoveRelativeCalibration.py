@@ -161,3 +161,9 @@ plt.ylabel('Voltage Ratio (mV/V)')
 plt.grid()
 
     
+# %%
+
+parentDirectory = "H:/PhD/OCT Data/Compression Test/Calibration/PDMS/Trial 4 - 10 step 0.05"
+
+voltageData 
+
