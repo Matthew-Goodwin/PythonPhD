@@ -1,4 +1,4 @@
-
+# %%
 import os,sys
 file_dir = os.path.dirname('H:/PhD/Python/GitHub/Universal')
 sys.path.append(file_dir)
@@ -19,12 +19,12 @@ plt.close('all')
 
 tstart=time.time()
 #Data location information  
-folderLocation = r'H:/PhD/OCT Data/Compression Test/Calibration/12 October/Step 0.04'                                                           
+folderLocation = r'H:/PhD/OCT Data/Compression Test/Calibration/12 October/Step 0.05'                                                           
 npy = r'\npy_files'                                                             
 output = r'\output_files'                                                        
 #Git Comment
 
-# %%
+
 
 #PS-OCT Image information
 spectra_num = 1024
@@ -39,7 +39,7 @@ gaussSigma = 12
 scale = (2*padSize + spectra_num)/spectra_num
 windowSize = 15
 
-
+#%%
 dataLocation = folderLocation
 print(dataLocation)
 sampleName = os.path.basename(dataLocation)
@@ -153,17 +153,92 @@ for files in enumerate(loadCellFiles):
 
 plt.figure()
 for i in range(len(voltageRatio)):
-    plt.plot(force, voltageRatio[i,:],'x')
+    plt.plot(voltageRatio[i,:],force,'x')
 
-plt.plot(force,np.mean(voltageRatio, axis=0),'k--')
-plt.xlabel('Weight (N)')
-plt.ylabel('Voltage Ratio (mV/V)')
+
+
+polyCoeffForce = np.polyfit(np.mean(voltageRatio,0),force,1)
+
+xpointsVoltage = np.arange(min(np.mean(voltageRatio,0)),max(np.mean(voltageRatio,0)), max(np.mean(voltageRatio,0))/1000)
+forceFitted = polyCoeffForce[0]*xpointsVoltage + polyCoeffForce[1]
+
+#plt.plot(np.mean(voltageRatio, axis=0),force,'k--')
+plt.plot(xpointsVoltage,forceFitted,'k--')
+plt.ylabel('Weight (N)')
+plt.xlabel('Voltage Ratio (mV/V)')
 plt.grid()
 
     
 # %%
 
-parentDirectory = "H:/PhD/OCT Data/Compression Test/Calibration/PDMS/Trial 4 - 10 step 0.05"
+parentDirectory = "H:/PhD/OCT Data/Compression Test/Calibration/PDMS/Trial 9 - 10 steps 0.05"
 
-voltageData 
+voltageData = np.loadtxt(glob.glob(parentDirectory + '/*.txt')[0])
+
+forceData = polyCoeffForce[0]*voltageData + polyCoeffForce[1] # Measured in N
+
+displacement = np.arange(0,0.5,0.05) # measured in mm
+
+
+#
+OCTFilesCh0 = sorted(glob.glob(parentDirectory + '/Ch0*.tdms'))
+OCTFilesCh1 = sorted(glob.glob(parentDirectory + '/Ch1*.tdms'))
+peakPosition =np.array(())
+for allImages in OCTFilesCh0:
+    print(allImages)
+    variableName = allImages.split('/')[-1]
+    variableName = variableName.split('_',1)[-1]
+    variableName = variableName.rsplit('.',1)[0]
+    Int = []
+    Ret = []
+    Ch0Complex = []
+    Ch1Complex = []
+    t1 = time.time()
+    Int,Ret, Ch0Complex,Ch1Complex = directory.loadData(parentDirectory,npy,output,variableName,A_scan_num,B_scan_num,padSize)
+    t2 = time.time()
+    print('It took {:.2f} seconds to load in the data'.format(t2-t1))
+
+    sliced=10
+    intdB = 10*np.log10(Int)
+
+    meanIntdB = np.mean(intdB,0)
+    meanIntdB = np.mean(meanIntdB,1)
+    
+    plt.figure(1)
+    plt.plot(meanIntdB)
+    start=10
+    peak = np.argmax(meanIntdB[int(start*scale):len(meanIntdB)])+start*scale
+    peakPosition = np.append(peakPosition,peak)
+    plt.plot(peak, meanIntdB[int(peak)],'x')
+
+
+peakPositionmm = peakPosition /(100*scale)
+mmShift = np.abs(peakPositionmm - np.max(peakPositionmm))
+plt.figure()
+plt.plot(displacement,mmShift,'rx')
+plt.xlabel('translation stage displacement (mm)')
+plt.ylabel('cavity compression (mm)')
+plt.title('Cavity compression vs translation stage measureements - ideally should be gradient 1')
+plt.grid()
+plt.tight_layout()
+
+
+xpointCompression = np.linspace(min(mmShift),max(mmShift),1000)
+polyCoeffCavity = np.polyfit(mmShift, forceData,1)
+FittedCavity = polyCoeffCavity[0]*xpointCompression + polyCoeffCavity[1]
+plt.figure()
+plt.plot(mmShift, forceData, 'rx')
+plt.plot(xpointCompression,FittedCavity, 'b--')
+plt.xlabel('Cavity Compression (mm)')
+plt.ylabel('Force (N)')
+plt.title('Cavity compression vs measured force - Needs to be linear')
+plt.grid()
+plt.tight_layout()
+
+areaCavity = 40.60 *40.6 -  (np.pi*13**2 + 4 * np.pi * (6.05/2)**2) #mm^2
+thickCavity = 12 #mm
+
+stressCavity = max(forceData)/(areaCavity*10**-6)
+strainCavity = (max(mmShift)/1000)/(12/1000)
+modulus = (10**-6)*stressCavity/strainCavity
 
